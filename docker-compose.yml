@@ -1,23 +1,12 @@
-web:
-  restart: always
-  build: ./web
-  expose:
-    - "8000"
-  links:
-    - postgres:postgres
-  volumes:
-    - /usr/src/app/static
-  env_file: .env
-  command: /usr/local/bin/gunicorn -w 2 -b :8000 app:app
-
-nginx:
-  restart: always
-  build: ./nginx/
+server:
+  build: ./server
   ports:
-    - "80:80"
-  volumes:
-    - /www/static
-  volumes_from:
-    - web
+    - "5000:5000"
+  command: "/deployment/env/bin/python /deployment/start.py"
   links:
-    - web:web
+    - client
+client:
+  build: ./client
+  ports:
+      - "9999:80"
+  command: "/usr/sbin/apache2ctl -D FOREGROUND"
